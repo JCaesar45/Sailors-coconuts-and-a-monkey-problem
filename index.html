@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coconut Solver — Sailors & the Monkey</title>
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --panel: #121821;
+        --panel-2: #1a2230;
+        --ink: #e8eef7;
+        --muted: #8a97a8;
+        --accent: #4fd1c5;
+        --accent-2: #f6ad55;
+        --danger: #fc8181;
+        --radius: 14px;
+        --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background:
+          radial-gradient(
+            1200px 600px at 10% -10%,
+            #1b2a3a 0%,
+            transparent 60%
+          ),
+          radial-gradient(900px 500px at 110% 10%, #2a1b2e 0%, transparent 55%),
+          var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 40px 16px;
+      }
+      .card {
+        width: 100%;
+        max-width: 760px;
+        background: linear-gradient(
+          180deg,
+          var(--panel) 0%,
+          var(--panel-2) 100%
+        );
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 36px;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 26px;
+        letter-spacing: 0.2px;
+      }
+      .sub {
+        margin: 0 0 28px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      label {
+        font-size: 13px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      input[type="number"] {
+        flex: 1 1 160px;
+        min-width: 120px;
+        background: #0d131b;
+        color: var(--ink);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 16px;
+        outline: none;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      input[type="number"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.18);
+      }
+      button {
+        background: linear-gradient(180deg, #5fe0d3 0%, #35b3a7 100%);
+        color: #04211d;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 22px;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition:
+          transform 0.08s ease,
+          filter 0.15s ease;
+      }
+      button:hover {
+        filter: brightness(1.05);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .result {
+        margin-top: 28px;
+        padding: 22px;
+        background: #0d131b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        min-height: 90px;
+      }
+      .answer {
+        font-size: 34px;
+        font-weight: 800;
+        color: var(--accent);
+        word-break: break-all;
+        font-variant-numeric: tabular-nums;
+      }
+      .answer.err {
+        color: var(--danger);
+        font-size: 18px;
+      }
+      .trace {
+        margin-top: 18px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.7;
+        white-space: pre-wrap;
+      }
+      .trace b {
+        color: var(--accent-2);
+        font-weight: 600;
+      }
+      .foot {
+        margin-top: 26px;
+        font-size: 12px;
+        color: var(--muted);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 16px;
+        line-height: 1.6;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent-2);
+        border: 1px solid rgba(246, 173, 85, 0.35);
+        padding: 3px 8px;
+        border-radius: 999px;
+        margin-bottom: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <span class="badge">Algorithm Demo</span>
+      <h1>Sailors, Coconuts &amp; the Monkey</h1>
+      <p class="sub">
+        Find the smallest initial pile of coconuts such that each of N sailors,
+        one at a time overnight, splits the pile into N parts with one left over
+        (given to the monkey) and hides their share — and in the morning the
+        remaining pile divides evenly by N.
+      </p>
+
+      <div class="row">
+        <label for="n">Sailors (N)</label>
+        <input id="n" type="number" min="1" max="12" value="5" />
+        <button id="go">Solve</button>
+        <button id="reset" class="ghost">Reset</button>
+      </div>
+
+      <section class="result" id="out">
+        <div class="answer" id="ans">—</div>
+        <div class="trace" id="trace"></div>
+      </section>
+
+      <div class="foot">
+        Closed form: odd N → N
+        <sup>N</sup>
+        − (N−1); even N → (N−1)·(N
+        <sup>N</sup>
+        − 1).
+        <br />
+        Runs entirely in your browser. No network calls.
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // Apply one night's transformation to a pile size.
+        // Returns the remaining pile, or null if the division is not exact.
+        function nightStep(pile, n) {
+          if ((pile - 1) % n !== 0) return null;
+          const share = (pile - 1) / n;
+          return pile - 1 - share;
+        }
+
+        // Brute-force verification of a candidate against the full story.
+        // Used only to prove the closed form; not needed for answering.
+        function verify(start, n) {
+          let pile = start;
+          for (let i = 0; i < n; i++) {
+            const next = nightStep(pile, n);
+            if (next === null) return false;
+            pile = next;
+          }
+          return pile % n === 0;
+        }
+
+        // Closed-form minimal solution.
+        function splitCoconuts(n) {
+          const p = Math.pow(n, n);
+          if (n % 2 === 1) return p - (n - 1);
+          return (n - 1) * (p - 1);
+        }
+
+        // Build a human-readable trace of the N night steps + morning division.
+        function trace(start, n) {
+          const lines = [];
+          let pile = start;
+          lines.push(`Start: ${pile}`);
+          for (let i = 1; i <= n; i++) {
+            const share = (pile - 1) / n;
+            const left = pile - 1 - share;
+            lines.push(
+              `Night ${i}: (${pile} - 1) / ${n} = ${share} each; monkey gets 1; left = ${left}`
+            );
+            pile = left;
+          }
+          lines.push(`Morning: ${pile} / ${n} = ${pile / n} exactly`);
+          return lines.join("\n");
+        }
+
+        const $n = document.getElementById("n");
+        const $ans = document.getElementById("ans");
+        const $trace = document.getElementById("trace");
+        const $go = document.getElementById("go");
+        const $reset = document.getElementById("reset");
+
+        function run() {
+          const n = parseInt($n.value, 10);
+          $trace.textContent = "";
+          $ans.classList.remove("err");
+
+          if (!Number.isInteger(n) || n < 1) {
+            $ans.textContent = "Enter a positive integer for N.";
+            $ans.classList.add("err");
+            return;
+          }
+          if (n > 12) {
+            $ans.textContent =
+              "N > 12 overflows JS number precision; capped demo at 12.";
+            $ans.classList.add("err");
+            return;
+          }
+
+          const answer = splitCoconuts(n);
+          const ok = verify(answer, n);
+
+          $ans.textContent = answer.toLocaleString();
+          $trace.innerHTML =
+            `Verified by brute force: <b>${ok ? "yes" : "no"}</b>\n\n` +
+            `<b>Trace</b>\n` +
+            trace(answer, n);
+        }
+
+        $go.addEventListener("click", run);
+        $n.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") run();
+        });
+        $reset.addEventListener("click", () => {
+          $n.value = 5;
+          $ans.textContent = "—";
+          $ans.classList.remove("err");
+          $trace.textContent = "";
+        });
+
+        // Initial render.
+        run();
+      })();
+    </script>
+  </body>
+</html>
